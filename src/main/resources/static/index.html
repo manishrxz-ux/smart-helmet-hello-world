@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Room - Smart Helmet 2027</title>
+    <meta name="description" content="Real-time worker safety monitoring dashboard.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="top-nav">
+            <div class="logo">
+                <span class="pulse-dot"></span>
+                <h1>SmartHelmet<span class="highlight">2027</span></h1>
+            </div>
+            <div class="nav-stats">
+                <div class="stat-badge">Active Workers: <span id="active-count">0</span></div>
+                <div class="stat-badge alert">Critical Alerts: <span id="alert-count">0</span></div>
+            </div>
+        </header>
+
+        <main class="grid-container" id="workers-grid">
+            <!-- Worker Cards will be dynamically injected here -->
+        </main>
+    </div>
+    <script src="./js/app.js"></script>
+</body>
+</html>
