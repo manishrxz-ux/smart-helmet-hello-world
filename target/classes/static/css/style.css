@@ -1,208 +1,70 @@
-:root {
-    --bg-color: #080C16;
-    --card-bg: rgba(255, 255, 255, 0.03);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --text-main: #FFFFFF;
-    --text-muted: #8B949E;
-    
-    --status-green: #00FF88;
-    --status-yellow: #FFC000;
-    --status-red: #FF3366;
-    --neon-blue: #00E5FF;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Outfit', sans-serif;
-}
-
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    min-height: 100vh;
-    overflow-x: hidden;
-    background-image: radial-gradient(circle at top right, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                      radial-gradient(circle at bottom left, rgba(255, 51, 102, 0.05) 0%, transparent 40%);
+    font-family: 'Roboto', sans-serif;
 }
 
-.dashboard {
-    padding: 2rem;
-    max-width: 1600px;
-    margin: 0 auto;
+.main-content {
+    margin-top: 2rem;
 }
 
-.top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--card-border);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.pulse-dot {
-    width: 12px;
-    height: 12px;
-    background-color: var(--status-green);
-    border-radius: 50%;
-    box-shadow: 0 0 15px var(--status-green);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
-}
-
-h1 {
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.highlight {
-    color: var(--neon-blue);
-}
-
-.nav-stats {
-    display: flex;
-    gap: 1rem;
-}
-
-.stat-badge {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    padding: 0.5rem 1.2rem;
-    border-radius: 30px;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-}
-
-.stat-badge.alert {
-    border-color: rgba(255, 51, 102, 0.3);
-    color: var(--status-red);
-}
-
-/* Grid System */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-}
-
-/* Glassmorphism Card */
+/* Material Card Overrides */
 .worker-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
-    padding: 1.5rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    border-radius: 8px; /* Slightly rounded corners for Material Design 3 feel */
+    transition: box-shadow 0.3s ease-in-out;
 }
 
 .worker-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 17px 2px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2) !important;
 }
 
-.worker-card::before {
-    content: '';
+.status-badge {
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--status-green); /* Default, changed by JS */
-    transition: background 0.3s ease;
-}
-
-.worker-card.status-yellow::before { background: var(--status-yellow); }
-.worker-card.status-red::before { 
-    background: var(--status-red); 
-    box-shadow: 0 0 20px var(--status-red);
-    animation: flashBorder 1.5s infinite alternate;
-}
-
-@keyframes flashBorder {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.worker-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.worker-id {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.status-indicator {
-    padding: 0.3rem 0.8rem;
+    top: 15px;
+    right: 15px;
+    padding: 5px 12px;
     border-radius: 20px;
+    font-weight: 500;
+    color: white;
     font-size: 0.8rem;
-    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
 }
 
-.status-green .status-indicator { background: rgba(0, 255, 136, 0.1); color: var(--status-green); }
-.status-yellow .status-indicator { background: rgba(255, 192, 0, 0.1); color: var(--status-yellow); }
-.status-red .status-indicator { background: rgba(255, 51, 102, 0.15); color: var(--status-red); }
+.bg-green { background-color: #4CAF50; }
+.bg-yellow { background-color: #FFC107; color: #333; }
+.bg-red { background-color: #F44336; animation: pulse-red 1.5s infinite; }
 
-/* Sensor Metrics */
-.metrics-grid {
+@keyframes pulse-red {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+}
+
+.sensor-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.metric {
-    background: rgba(0,0,0,0.3);
-    padding: 1rem;
-    border-radius: 12px;
+.sensor-item {
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    align-items: center;
+    gap: 10px;
 }
 
-.metric-label {
+.sensor-item i {
+    color: #1976D2; /* Material Blue */
+    background: #E3F2FD;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.sensor-value {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+.sensor-label {
     font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #757575;
+    display: block;
 }
-
-.metric-value {
-    font-size: 1.4rem;
-    font-weight: 600;
-    display: flex;
-    align-items: baseline;
-    gap: 0.3rem;
-}
-
-.metric-unit {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-/* Warnings */
-.metric.warning .metric-value { color: var(--status-yellow); }
-.metric.critical .metric-value { color: var(--status-red); }

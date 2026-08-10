@@ -1,71 +1,86 @@
-// Smart Helmet 2027 - Frontend Dashboard Logic
+// Mock Data for Render Deployment
+let mockWorkers = [
+    { id: 'WRK-001', name: 'Manish Kumar', status: 'green', hr: 72, spo2: 98, temp: 36.5, gas: 0.01 },
+    { id: 'WRK-002', name: 'Rohan Sharma', status: 'green', hr: 85, spo2: 96, temp: 37.1, gas: 0.02 }
+];
 
-// Simulated API Call to our future Cloudflare backend
-async function fetchWorkersData() {
-    try {
-        const response = await fetch('/api/workers');
-        if (!response.ok) throw new Error('Network response was not ok');
-        return await response.json();
-    } catch (error) {
-        console.error("Failed to fetch worker data:", error);
-        return [];
-    }
-}
-
-function createWorkerCard(worker) {
-    // Determine specific metric classes based on thresholds
-    const hrClass = worker.heartRate > 120 ? 'critical' : (worker.heartRate > 100 ? 'warning' : '');
-    const tempClass = worker.temp > 38.5 ? 'critical' : (worker.temp > 37.5 ? 'warning' : '');
-    const spo2Class = worker.spo2 < 92 ? 'critical' : (worker.spo2 < 95 ? 'warning' : '');
-    const gasClass = worker.gas > 0.5 ? 'critical' : (worker.gas > 0.1 ? 'warning' : '');
-
+function generateCard(worker) {
+    const badgeColor = worker.status === 'green' ? 'bg-green' : (worker.status === 'yellow' ? 'bg-yellow' : 'bg-red');
+    
     return `
-        <div class="worker-card status-${worker.status}" id="${worker.id}">
-            <div class="card-header">
-                <div>
-                    <h2 class="worker-name">${worker.name}</h2>
-                    <span class="worker-id">${worker.id}</span>
-                </div>
-                <div class="status-indicator">${worker.status.toUpperCase()}</div>
-            </div>
-            
-            <div class="metrics-grid">
-                <div class="metric ${hrClass}">
-                    <span class="metric-label">Heart Rate</span>
-                    <div class="metric-value">${worker.heartRate} <span class="metric-unit">BPM</span></div>
-                </div>
-                <div class="metric ${tempClass}">
-                    <span class="metric-label">Body Temp</span>
-                    <div class="metric-value">${worker.temp} <span class="metric-unit">°C</span></div>
-                </div>
-                <div class="metric ${spo2Class}">
-                    <span class="metric-label">Oxygen (SpO2)</span>
-                    <div class="metric-value">${worker.spo2} <span class="metric-unit">%</span></div>
-                </div>
-                <div class="metric ${gasClass}">
-                    <span class="metric-label">Toxic Gas</span>
-                    <div class="metric-value">${worker.gas} <span class="metric-unit">ppm</span></div>
+        <div class="col s12 m6 l4">
+            <div class="card worker-card hoverable">
+                <div class="card-content">
+                    <span class="status-badge ${badgeColor}">${worker.status}</span>
+                    <span class="card-title">${worker.name}</span>
+                    <p class="grey-text">${worker.id}</p>
+                    
+                    <div class="sensor-grid">
+                        <div class="sensor-item">
+                            <i class="material-icons">favorite</i>
+                            <div>
+                                <span class="sensor-value">${worker.hr} bpm</span>
+                                <span class="sensor-label">Heart Rate</span>
+                            </div>
+                        </div>
+                        <div class="sensor-item">
+                            <i class="material-icons">thermostat</i>
+                            <div>
+                                <span class="sensor-value">${worker.temp} °C</span>
+                                <span class="sensor-label">Body Temp</span>
+                            </div>
+                        </div>
+                        <div class="sensor-item">
+                            <i class="material-icons">air</i>
+                            <div>
+                                <span class="sensor-value">${worker.spo2} %</span>
+                                <span class="sensor-label">SpO2 (Oxygen)</span>
+                            </div>
+                        </div>
+                        <div class="sensor-item">
+                            <i class="material-icons">warning</i>
+                            <div>
+                                <span class="sensor-value">${worker.gas} ppm</span>
+                                <span class="sensor-label">Toxic Gas</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
 
-async function updateDashboard() {
-    const workers = await fetchWorkersData();
+function renderDashboard() {
     const grid = document.getElementById('workers-grid');
+    grid.innerHTML = mockWorkers.map(generateCard).join('');
     
-    // Update Stats
-    document.getElementById('active-count').innerText = workers.length;
-    const criticalCount = workers.filter(w => w.status === 'red').length;
-    document.getElementById('alert-count').innerText = criticalCount;
-
-    // Build Cards
-    grid.innerHTML = workers.map(createWorkerCard).join('');
+    document.getElementById('active-count').innerText = mockWorkers.length;
+    document.getElementById('alert-count').innerText = mockWorkers.filter(w => w.status === 'red').length;
 }
 
-// Initial Load
-updateDashboard();
+// Interactive Mock Feature
+function simulateAlert() {
+    M.toast({html: 'Simulating Emergency Alert on WRK-001!', classes: 'rounded red'});
+    mockWorkers[0].status = 'red';
+    mockWorkers[0].hr = 145;
+    mockWorkers[0].temp = 39.5;
+    renderDashboard();
+    
+    setTimeout(() => {
+        M.toast({html: 'Worker status normalized.', classes: 'rounded green'});
+        mockWorkers[0].status = 'green';
+        mockWorkers[0].hr = 75;
+        mockWorkers[0].temp = 36.6;
+        renderDashboard();
+    }, 5000);
+}
 
-// Poll every 5 seconds (simulated real-time)
-setInterval(updateDashboard, 5000);
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Materialize components
+    var elems = document.querySelectorAll('.fixed-action-btn');
+    var instances = M.FloatingActionButton.init(elems, {});
+    
+    renderDashboard();
+});
