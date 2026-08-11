@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("/")
+    @GetMapping("/api/test")
     public String hello() {
-        return "Hello World! The Smart Helmet Backend is live on Render!";
+        return "Backend API is running!";
     }
 }
