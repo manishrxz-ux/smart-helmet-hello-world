@@ -18,6 +18,8 @@ public class SensorData {
     private int spo2;
     private float temp;
     private float gas;
+    private double latitude;
+    private double longitude;
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public SensorData() {}
@@ -35,6 +37,10 @@ public class SensorData {
     public void setTemp(float temp) { this.temp = temp; }
     public float getGas() { return gas; }
     public void setGas(float gas) { this.gas = gas; }
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

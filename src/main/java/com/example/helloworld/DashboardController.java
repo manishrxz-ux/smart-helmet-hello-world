@@ -32,9 +32,11 @@ public class DashboardController {
                 dto.spo2 = data.getSpo2();
                 dto.temp = data.getTemp();
                 dto.gas = data.getGas();
+                dto.lat = data.getLatitude();
+                dto.lng = data.getLongitude();
                 dto.timestamp = data.getTimestamp();
             } else {
-                dto.hr = 0; dto.spo2 = 0; dto.temp = 0.0f; dto.gas = 0.0f;
+                dto.hr = 0; dto.spo2 = 0; dto.temp = 0.0f; dto.gas = 0.0f; dto.lat = 0.0; dto.lng = 0.0;
             }
             result.add(dto);
         }

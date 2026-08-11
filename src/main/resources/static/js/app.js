@@ -45,6 +45,20 @@ function generateCard(worker) {
     `;
 }
 
+// Global Map and Marker Variables
+let map;
+let markers = {};
+
+function initMap() {
+    // Initialize map centered at a default location (e.g. India)
+    map = L.map('map').setView([20.5937, 78.9629], 4);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+}
+
 // Live Data Fetching
 async function fetchWorkersData() {
     try {
@@ -65,15 +79,39 @@ async function renderDashboard() {
     
     document.getElementById('active-count').innerText = workers.length;
     document.getElementById('alert-count').innerText = workers.filter(w => w.status === 'red').length;
+
+    // Update Map Markers
+    if (map) {
+        workers.forEach(w => {
+            if (w.lat && w.lng) {
+                // Determine marker color based on status
+                let color = 'blue';
+                if (w.status === 'red') color = 'red';
+                else if (w.status === 'yellow') color = 'orange';
+                else if (w.status === 'green') color = 'green';
+                
+                if (markers[w.id]) {
+                    // Update existing marker
+                    markers[w.id].setLatLng([w.lat, w.lng]);
+                    // If we want to change color dynamically in leaflet easily, we can bind a popup instead or use custom icons.
+                    markers[w.id].bindPopup(`<b>${w.name}</b><br>Status: ${w.status}`);
+                } else {
+                    // Create new marker
+                    markers[w.id] = L.marker([w.lat, w.lng]).addTo(map)
+                        .bindPopup(`<b>${w.name}</b><br>Status: ${w.status}`);
+                }
+            }
+        });
+    }
 }
 
 // Initial fetch and set polling
-renderDashboard();
-setInterval(renderDashboard, 5000);
-
-// Init
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Materialize components
     var elems = document.querySelectorAll('.fixed-action-btn');
     var instances = M.FloatingActionButton.init(elems, {});
+    
+    initMap();
+    renderDashboard();
+    setInterval(renderDashboard, 5000);
 });
