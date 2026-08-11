@@ -1,9 +1,3 @@
-// Mock Data for Render Deployment
-let mockWorkers = [
-    { id: 'WRK-001', name: 'Manish Kumar', status: 'green', hr: 72, spo2: 98, temp: 36.5, gas: 0.01 },
-    { id: 'WRK-002', name: 'Rohan Sharma', status: 'green', hr: 85, spo2: 96, temp: 37.1, gas: 0.02 }
-];
-
 function generateCard(worker) {
     const badgeColor = worker.status === 'green' ? 'bg-green' : (worker.status === 'yellow' ? 'bg-yellow' : 'bg-red');
     
@@ -51,36 +45,35 @@ function generateCard(worker) {
     `;
 }
 
-function renderDashboard() {
-    const grid = document.getElementById('workers-grid');
-    grid.innerHTML = mockWorkers.map(generateCard).join('');
-    
-    document.getElementById('active-count').innerText = mockWorkers.length;
-    document.getElementById('alert-count').innerText = mockWorkers.filter(w => w.status === 'red').length;
+// Live Data Fetching
+async function fetchWorkersData() {
+    try {
+        const response = await fetch('/api/workers');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Failed to fetch worker data:", error);
+        return [];
+    }
 }
 
-// Interactive Mock Feature
-function simulateAlert() {
-    M.toast({html: 'Simulating Emergency Alert on WRK-001!', classes: 'rounded red'});
-    mockWorkers[0].status = 'red';
-    mockWorkers[0].hr = 145;
-    mockWorkers[0].temp = 39.5;
-    renderDashboard();
+async function renderDashboard() {
+    const workers = await fetchWorkersData();
+    const grid = document.getElementById('workers-grid');
+    grid.innerHTML = workers.map(generateCard).join('');
     
-    setTimeout(() => {
-        M.toast({html: 'Worker status normalized.', classes: 'rounded green'});
-        mockWorkers[0].status = 'green';
-        mockWorkers[0].hr = 75;
-        mockWorkers[0].temp = 36.6;
-        renderDashboard();
-    }, 5000);
+    document.getElementById('active-count').innerText = workers.length;
+    document.getElementById('alert-count').innerText = workers.filter(w => w.status === 'red').length;
 }
+
+// Initial fetch and set polling
+renderDashboard();
+setInterval(renderDashboard, 5000);
 
 // Init
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Materialize components
     var elems = document.querySelectorAll('.fixed-action-btn');
     var instances = M.FloatingActionButton.init(elems, {});
-    
-    renderDashboard();
 });

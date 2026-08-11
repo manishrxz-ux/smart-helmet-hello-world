@@ -1,0 +1,13 @@
+package com.example.helloworld;
+import java.time.LocalDateTime;
+
+public class WorkerDataDTO {
+    public String id;
+    public String name;
+    public String status;
+    public int hr;
+    public int spo2;
+    public float temp;
+    public float gas;
+    public LocalDateTime timestamp;
+}
