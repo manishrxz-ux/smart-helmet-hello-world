@@ -50,8 +50,8 @@ let map;
 let markers = {};
 
 function initMap() {
-    // Initialize map centered at a default location (e.g. India)
-    map = L.map('map').setView([20.5937, 78.9629], 4);
+    // Initialize map centered at Amravati, Maharashtra
+    map = L.map('map').setView([20.9320, 77.7523], 13);
     
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
