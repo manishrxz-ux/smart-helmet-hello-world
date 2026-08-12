@@ -34,12 +34,18 @@ public class TelemetryController {
         // Check Temp & Gas
         if (data.getTemp() > settings.getMaxTemp() || data.getGas() > settings.getMaxGas()) {
             status = "red";
+        } else if (data.getTemp() > settings.getMaxTemp() * 0.95 || data.getGas() > settings.getMaxGas() * 0.8) {
+            status = "yellow";
         }
 
         // Check Heart Rate & SpO2 only if they are not reading 0
         if (!ignoreHrSpo2) {
             if (data.getHeartRate() > settings.getMaxHr() || data.getHeartRate() < settings.getMinHr() || data.getSpo2() < settings.getMinSpo2()) {
                 status = "red";
+            } else if (data.getHeartRate() > settings.getMaxHr() * 0.9 || data.getSpo2() < settings.getMinSpo2() + 2) {
+                if (!status.equals("red")) {
+                    status = "yellow";
+                }
             }
         }
 

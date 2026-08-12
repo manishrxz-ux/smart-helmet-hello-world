@@ -1,4 +1,15 @@
-function generateCard(worker) {
+function updateCardDOM(worker) {
+    let card = document.getElementById('worker-card-' + worker.id);
+    let isNew = false;
+    
+    if (!card) {
+        card = document.createElement('div');
+        card.id = 'worker-card-' + worker.id;
+        card.className = "col s12 m6 l4";
+        document.getElementById('workers-container').appendChild(card);
+        isNew = true;
+    }
+
     let statusColor = "green";
     let icon = "check_circle";
     
@@ -13,47 +24,61 @@ function generateCard(worker) {
     // Convert gas back to PPM to match OLED logic: (gasRaw / 4095) * 9600 + 400
     let ppm = Math.round((worker.gas * 9600) + 400);
 
-    // Highlighting logic
-    let tempClass = worker.temp > currentSettings.maxTemp ? "red-text bold" : "";
-    let gasClass = worker.gas > currentSettings.maxGas ? "red-text bold" : "";
-    let spo2Class = (worker.spo2 < currentSettings.minSpo2 && worker.spo2 > 0) ? "red-text bold" : "";
-    let hrClass = (worker.hr > currentSettings.maxHr && worker.hr > 0) ? "red-text bold" : "";
+    // Online/Offline Logic
+    let isOffline = false;
+    if (worker.timestamp) {
+        let lastSeen = new Date(worker.timestamp).getTime();
+        let now = Date.now();
+        if (now - lastSeen > 15000) { // Offline if no data for 15s
+            isOffline = true;
+            statusColor = "grey";
+            icon = "cloud_off";
+        }
+    }
+    let offlineBadge = isOffline ? '<span class="new badge grey" data-badge-caption="Offline"></span>' : '<span class="new badge green" data-badge-caption="Live"></span>';
 
-    return `
-        <div class="col s12 m6 l4">
-            <div class="card hoverable worker-card">
-                <div class="card-content">
-                    <span class="card-title truncate">
-                        <i class="material-icons ${statusColor}-text status-icon">${icon}</i>
-                        ${worker.name}
-                    </span>
-                    <div class="divider" style="margin: 10px 0;"></div>
-                    <div class="row" style="margin-bottom: 0;">
-                        <div class="col s6 metric-box">
-                            <i class="material-icons tiny grey-text">favorite</i>
-                            <span class="${hrClass}">${worker.hr} bpm</span>
-                            <div class="metric-label">Heart Rate</div>
-                        </div>
-                        <div class="col s6 metric-box">
-                            <i class="material-icons tiny grey-text">opacity</i>
-                            <span class="${spo2Class}">${worker.spo2}%</span>
-                            <div class="metric-label">SpO2 Level</div>
-                        </div>
-                        <div class="col s6 metric-box" style="margin-top: 15px;">
-                            <i class="material-icons tiny grey-text">thermostat</i>
-                            <span class="${tempClass}">${worker.temp.toFixed(1)}&deg;C</span>
-                            <div class="metric-label">Body Temp</div>
-                        </div>
-                        <div class="col s6 metric-box" style="margin-top: 15px;">
-                            <i class="material-icons tiny grey-text">air</i>
-                            <span class="${gasClass}">${ppm} ppm</span>
-                            <div class="metric-label">Toxic Gas</div>
-                        </div>
+    // Highlighting logic
+    let tempClass = worker.temp > currentSettings.maxTemp ? "red-text bold" : (worker.temp > currentSettings.maxTemp * 0.95 ? "orange-text" : "");
+    let gasClass = worker.gas > currentSettings.maxGas ? "red-text bold" : (worker.gas > currentSettings.maxGas * 0.8 ? "orange-text" : "");
+    let spo2Class = (worker.spo2 < currentSettings.minSpo2 && worker.spo2 > 0) ? "red-text bold" : ((worker.spo2 < currentSettings.minSpo2 + 2 && worker.spo2 > 0) ? "orange-text" : "");
+    let hrClass = (worker.hr > currentSettings.maxHr && worker.hr > 0) ? "red-text bold" : ((worker.hr > currentSettings.maxHr * 0.9 && worker.hr > 0) ? "orange-text" : "");
+
+    let html = `
+        <div class="card hoverable worker-card">
+            <div class="card-content">
+                <span class="card-title truncate">
+                    <i class="material-icons ${statusColor}-text status-icon">${icon}</i>
+                    ${worker.name} ${offlineBadge}
+                </span>
+                <div class="divider" style="margin: 10px 0;"></div>
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="col s6 metric-box">
+                        <i class="material-icons tiny grey-text">favorite</i>
+                        <span class="${hrClass}">${worker.hr} bpm</span>
+                        <div class="metric-label">Heart Rate</div>
+                    </div>
+                    <div class="col s6 metric-box">
+                        <i class="material-icons tiny grey-text">opacity</i>
+                        <span class="${spo2Class}">${worker.spo2}%</span>
+                        <div class="metric-label">SpO2 Level</div>
+                    </div>
+                    <div class="col s6 metric-box" style="margin-top: 15px;">
+                        <i class="material-icons tiny grey-text">thermostat</i>
+                        <span class="${tempClass}">${worker.temp.toFixed(1)}&deg;C</span>
+                        <div class="metric-label">Body Temp</div>
+                    </div>
+                    <div class="col s6 metric-box" style="margin-top: 15px;">
+                        <i class="material-icons tiny grey-text">air</i>
+                        <span class="${gasClass}">${ppm} ppm</span>
+                        <div class="metric-label">Toxic Gas</div>
                     </div>
                 </div>
             </div>
         </div>
     `;
+    
+    // Smooth DOM replacement
+    card.innerHTML = html;
 }
 
 // Global Map and Marker Variables
@@ -68,6 +93,21 @@ function initMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+}
+
+function updateMapMarker(id, name, lat, lng, status) {
+    let color = 'blue';
+    if (status === 'red') color = 'red';
+    else if (status === 'yellow') color = 'orange';
+    else if (status === 'green') color = 'green';
+    
+    if (markers[id]) {
+        markers[id].setLatLng([lat, lng]);
+        markers[id].bindPopup(`<b>${name}</b><br>Status: ${status}`);
+    } else {
+        markers[id] = L.marker([lat, lng]).addTo(map)
+            .bindPopup(`<b>${name}</b><br>Status: ${status}`);
+    }
 }
 
 // Live Data Fetching
@@ -85,35 +125,26 @@ async function fetchWorkersData() {
 
 async function renderDashboard() {
     const workers = await fetchWorkersData();
-    const grid = document.getElementById('workers-grid');
-    grid.innerHTML = workers.map(generateCard).join('');
     
     document.getElementById('active-count').innerText = workers.length;
     document.getElementById('alert-count').innerText = workers.filter(w => w.status === 'red').length;
+    
+    let currentIds = workers.map(w => w.id);
+    
+    workers.forEach(worker => {
+        updateCardDOM(worker);
+        if(worker.lat && worker.lng) {
+            updateMapMarker(worker.id, worker.name, worker.lat, worker.lng, worker.status);
+        }
+    });
 
-    // Update Map Markers
-    if (map) {
-        workers.forEach(w => {
-            if (w.lat && w.lng) {
-                // Determine marker color based on status
-                let color = 'blue';
-                if (w.status === 'red') color = 'red';
-                else if (w.status === 'yellow') color = 'orange';
-                else if (w.status === 'green') color = 'green';
-                
-                if (markers[w.id]) {
-                    // Update existing marker
-                    markers[w.id].setLatLng([w.lat, w.lng]);
-                    // If we want to change color dynamically in leaflet easily, we can bind a popup instead or use custom icons.
-                    markers[w.id].bindPopup(`<b>${w.name}</b><br>Status: ${w.status}`);
-                } else {
-                    // Create new marker
-                    markers[w.id] = L.marker([w.lat, w.lng]).addTo(map)
-                        .bindPopup(`<b>${w.name}</b><br>Status: ${w.status}`);
-                }
-            }
-        });
-    }
+    // Clean up DOM for deleted workers
+    Array.from(document.getElementById('workers-container').children).forEach(child => {
+        let id = child.id.replace('worker-card-', '');
+        if (!currentIds.includes(id)) {
+            child.remove();
+        }
+    });
 }
 
 // Initial fetch and set polling
