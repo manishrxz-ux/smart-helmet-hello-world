@@ -35,6 +35,7 @@ public class DashboardController {
                 dto.lat = data.getLatitude();
                 dto.lng = data.getLongitude();
                 dto.timestamp = data.getTimestamp();
+                dto.secondsSinceUpdate = java.time.temporal.ChronoUnit.SECONDS.between(data.getTimestamp(), java.time.LocalDateTime.now());
             } else {
                 dto.hr = 0; dto.spo2 = 0; dto.temp = 0.0f; dto.gas = 0.0f; dto.lat = 0.0; dto.lng = 0.0;
             }

@@ -12,4 +12,5 @@ public class WorkerDataDTO {
     public double lat;
     public double lng;
     public LocalDateTime timestamp;
+    public long secondsSinceUpdate;
 }

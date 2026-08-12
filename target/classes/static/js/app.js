@@ -26,10 +26,8 @@ function updateCardDOM(worker) {
 
     // Online/Offline Logic
     let isOffline = false;
-    if (worker.timestamp) {
-        let lastSeen = new Date(worker.timestamp).getTime();
-        let now = Date.now();
-        if (now - lastSeen > 15000) { // Offline if no data for 15s
+    if (worker.secondsSinceUpdate !== undefined) {
+        if (worker.secondsSinceUpdate > 15) { // Offline if no data for 15s
             isOffline = true;
             statusColor = "grey";
             icon = "cloud_off";
