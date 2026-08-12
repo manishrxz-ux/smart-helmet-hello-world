@@ -5,7 +5,7 @@ function updateCardDOM(worker) {
     if (!card) {
         card = document.createElement('div');
         card.id = 'worker-card-' + worker.id;
-        card.className = "col s12 m6 l4";
+        card.className = "col s12"; // Giant Card! Takes full width
         document.getElementById('workers-grid').appendChild(card);
         isNew = true;
     }
@@ -42,34 +42,45 @@ function updateCardDOM(worker) {
     let hrClass = (worker.hr > currentSettings.maxHr && worker.hr > 0) ? "red-text bold" : ((worker.hr > currentSettings.maxHr * 0.9 && worker.hr > 0) ? "orange-text" : "");
 
     let html = `
-        <div class="card hoverable worker-card">
+        <div class="card hoverable worker-card" style="padding: 20px;">
             <div class="card-content">
-                <span class="card-title truncate">
-                    <i class="material-icons ${statusColor}-text status-icon">${icon}</i>
+                <span class="card-title truncate" style="font-size: 2.5rem; font-weight: 500; margin-bottom: 20px;">
+                    <i class="material-icons ${statusColor}-text status-icon" style="font-size: 3rem; vertical-align: middle;">${icon}</i>
                     ${worker.name} ${offlineBadge}
                 </span>
-                <div class="divider" style="margin: 10px 0;"></div>
-                <div class="row" style="margin-bottom: 0;">
-                    <div class="col s6 metric-box">
-                        <i class="material-icons tiny grey-text">favorite</i>
-                        <span class="${hrClass}">${worker.hr} bpm</span>
-                        <div class="metric-label">Heart Rate</div>
+                <div class="divider" style="margin: 20px 0;"></div>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; text-align: center;">
+                    
+                    <div style="flex: 1; min-width: 150px; margin: 10px;">
+                        <i class="material-icons grey-text" style="font-size: 2.5rem;">favorite</i>
+                        <div class="${hrClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.hr} <span style="font-size: 1.5rem;">bpm</span></div>
+                        <div style="font-size: 1.5rem; color: #757575;">Heart Rate</div>
                     </div>
-                    <div class="col s6 metric-box">
-                        <i class="material-icons tiny grey-text">opacity</i>
-                        <span class="${spo2Class}">${worker.spo2}%</span>
-                        <div class="metric-label">SpO2 Level</div>
+                    
+                    <div style="flex: 1; min-width: 150px; margin: 10px;">
+                        <i class="material-icons grey-text" style="font-size: 2.5rem;">opacity</i>
+                        <div class="${spo2Class}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.spo2}<span style="font-size: 1.5rem;">%</span></div>
+                        <div style="font-size: 1.5rem; color: #757575;">SpO2 Level</div>
                     </div>
-                    <div class="col s6 metric-box" style="margin-top: 15px;">
-                        <i class="material-icons tiny grey-text">thermostat</i>
-                        <span class="${tempClass}">${worker.temp.toFixed(1)}&deg;C</span>
-                        <div class="metric-label">Body Temp</div>
+                    
+                    <div style="flex: 1; min-width: 150px; margin: 10px;">
+                        <i class="material-icons grey-text" style="font-size: 2.5rem;">thermostat</i>
+                        <div class="${tempClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.temp ? worker.temp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div style="font-size: 1.5rem; color: #757575;">Body Temp</div>
                     </div>
-                    <div class="col s6 metric-box" style="margin-top: 15px;">
-                        <i class="material-icons tiny grey-text">air</i>
-                        <span class="${gasClass}">${ppm} ppm</span>
-                        <div class="metric-label">Toxic Gas</div>
+                    
+                    <div style="flex: 1; min-width: 150px; margin: 10px;">
+                        <i class="material-icons grey-text" style="font-size: 2.5rem;">ac_unit</i>
+                        <div style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.envTemp ? worker.envTemp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div style="font-size: 1.5rem; color: #757575;">Env Temp</div>
                     </div>
+                    
+                    <div style="flex: 1; min-width: 150px; margin: 10px;">
+                        <i class="material-icons grey-text" style="font-size: 2.5rem;">air</i>
+                        <div class="${gasClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${ppm} <span style="font-size: 1.5rem;">ppm</span></div>
+                        <div style="font-size: 1.5rem; color: #757575;">Toxic Gas</div>
+                    </div>
+                    
                 </div>
             </div>
         </div>

@@ -31,6 +31,7 @@ public class DashboardController {
                 dto.hr = data.getHeartRate();
                 dto.spo2 = data.getSpo2();
                 dto.temp = data.getTemp();
+                dto.envTemp = data.getEnvTemp();
                 dto.gas = data.getGas();
                 dto.lat = data.getLatitude();
                 dto.lng = data.getLongitude();

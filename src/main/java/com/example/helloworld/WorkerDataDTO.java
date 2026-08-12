@@ -8,6 +8,7 @@ public class WorkerDataDTO {
     public int hr;
     public int spo2;
     public float temp;
+    public float envTemp;
     public float gas;
     public double lat;
     public double lng;

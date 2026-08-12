@@ -17,6 +17,7 @@ public class SensorData {
     private int heartRate;
     private int spo2;
     private float temp;
+    private float envTemp;
     private float gas;
     private double latitude;
     private double longitude;
@@ -35,6 +36,8 @@ public class SensorData {
     public void setSpo2(int spo2) { this.spo2 = spo2; }
     public float getTemp() { return temp; }
     public void setTemp(float temp) { this.temp = temp; }
+    public float getEnvTemp() { return envTemp; }
+    public void setEnvTemp(float envTemp) { this.envTemp = envTemp; }
     public float getGas() { return gas; }
     public void setGas(float gas) { this.gas = gas; }
     public double getLatitude() { return latitude; }
