@@ -15,18 +15,32 @@ public class TelemetryController {
     @Autowired
     private SensorDataRepository sensorDataRepository;
 
+    @Autowired
+    private ThresholdSettingsRepository settingsRepository;
+
     @PostMapping("/api/telemetry")
     public ResponseEntity<?> receiveTelemetry(@RequestBody SensorData data) {
         if (data.getWorkerId() == null) {
             return ResponseEntity.badRequest().body("Missing worker_id");
         }
 
+        // Fetch live thresholds from DB
+        ThresholdSettings settings = settingsRepository.findById(1L).orElse(new ThresholdSettings());
+
         // Determine status
         String status = "green";
-        if (data.getHeartRate() > 120 || data.getTemp() > 38.5 || data.getSpo2() < 92 || data.getGas() > 0.5) {
+        boolean ignoreHrSpo2 = (data.getHeartRate() == 0 && data.getSpo2() == 0);
+
+        // Check Temp & Gas
+        if (data.getTemp() > settings.getMaxTemp() || data.getGas() > settings.getMaxGas()) {
             status = "red";
-        } else if (data.getHeartRate() > 100 || data.getTemp() > 37.5 || data.getSpo2() < 95 || data.getGas() > 0.1) {
-            status = "yellow";
+        }
+
+        // Check Heart Rate & SpO2 only if they are not reading 0
+        if (!ignoreHrSpo2) {
+            if (data.getHeartRate() > settings.getMaxHr() || data.getHeartRate() < settings.getMinHr() || data.getSpo2() < settings.getMinSpo2()) {
+                status = "red";
+            }
         }
 
         // Save sensor data

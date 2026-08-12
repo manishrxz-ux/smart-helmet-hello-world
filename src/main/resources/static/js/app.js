@@ -106,11 +106,64 @@ async function renderDashboard() {
 }
 
 // Initial fetch and set polling
+// Settings Logic
+let currentSettings = {};
+
+async function loadSettings() {
+    try {
+        const response = await fetch('/api/settings');
+        currentSettings = await response.json();
+        
+        document.getElementById('set-temp').value = currentSettings.maxTemp;
+        document.getElementById('val-temp').innerText = currentSettings.maxTemp;
+        
+        // Convert normalized gas back to PPM for UI roughly
+        let gasPpm = Math.round(currentSettings.maxGas * 10000);
+        document.getElementById('set-gas').value = gasPpm;
+        document.getElementById('val-gas').innerText = gasPpm;
+        
+        document.getElementById('set-spo2').value = currentSettings.minSpo2;
+        document.getElementById('val-spo2').innerText = currentSettings.minSpo2;
+        
+        document.getElementById('set-maxhr').value = currentSettings.maxHr;
+        document.getElementById('val-maxhr').innerText = currentSettings.maxHr;
+    } catch (e) { console.error("Failed to load settings", e); }
+}
+
+async function saveSettings() {
+    currentSettings.maxTemp = parseFloat(document.getElementById('set-temp').value);
+    currentSettings.minSpo2 = parseInt(document.getElementById('set-spo2').value);
+    currentSettings.maxHr = parseInt(document.getElementById('set-maxhr').value);
+    
+    // Convert UI PPM back to normalized 0-1 for backend
+    let gasPpm = parseInt(document.getElementById('set-gas').value);
+    currentSettings.maxGas = gasPpm / 10000.0;
+
+    await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentSettings)
+    });
+    
+    M.toast({html: 'Alert Thresholds Updated!'});
+}
+
+// Update labels when sliders move
+document.querySelectorAll('input[type=range]').forEach(input => {
+    input.addEventListener('input', function() {
+        document.getElementById('val-' + this.id.split('-')[1]).innerText = this.value;
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Materialize components
     var elems = document.querySelectorAll('.fixed-action-btn');
-    var instances = M.FloatingActionButton.init(elems, {});
+    M.FloatingActionButton.init(elems, {});
     
+    var modals = document.querySelectorAll('.modal');
+    M.Modal.init(modals, {});
+    
+    loadSettings();
     initMap();
     renderDashboard();
     setInterval(renderDashboard, 5000);
