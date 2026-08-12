@@ -241,8 +241,9 @@ async function fetchAlerts() {
             tbody.innerHTML = '';
             
             alertData.forEach(alert => {
+                let localTime = new Date(alert.timestamp + 'Z').toLocaleString();
                 let row = `<tr>
-                    <td>${new Date(alert.timestamp).toLocaleString()}</td>
+                    <td>${localTime}</td>
                     <td>${alert.workerId}</td>
                     <td><span class="new badge ${alert.status === 'red' ? 'red' : 'orange'}" data-badge-caption="${alert.status.toUpperCase()}"></span></td>
                     <td>${alert.reason}</td>
@@ -267,8 +268,9 @@ function downloadCSV() {
     csvContent += "Timestamp,Worker ID,Status,Reason,Latitude,Longitude,SpO2,HR,Body Temp,Env Temp,Gas\n";
     
     alertData.forEach(function(alert) {
+        let localTime = new Date(alert.timestamp + 'Z').toLocaleString();
         let row = [
-            alert.timestamp,
+            `"${localTime}"`,
             alert.workerId,
             alert.status,
             `"${alert.reason}"`,
