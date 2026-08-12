@@ -22,7 +22,7 @@
             <a href="#" class="brand-logo"><i class="material-icons left" style="margin-top:2px;">engineering</i>Smart Helmet 2027</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="#"><i class="material-icons left">people</i>Active Workers: <span id="active-count" class="badge white blue-text" style="margin-top: 20px;">0</span></a></li>
-                <li><a href="#"><i class="material-icons left">warning</i>Alerts: <span id="alert-count" class="new badge red" data-badge-caption="" style="margin-top: 20px;">0</span></a></li>
+                <li><a href="#alerts-modal" class="modal-trigger"><i class="material-icons left">warning</i>Alerts: <span id="alert-count" class="new badge red" data-badge-caption="" style="margin-top: 20px;">0</span></a></li>
                 <li><a href="#settings-modal" class="modal-trigger"><i class="material-icons left">settings</i>Settings</a></li>
             </ul>
         </div>
@@ -81,6 +81,32 @@
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="saveSettings()">Save & Apply</a>
+        </div>
+    </div>
+
+    <!-- Alerts Modal -->
+    <div id="alerts-modal" class="modal bottom-sheet" style="max-height: 80%;">
+        <div class="modal-content">
+            <h4>Alert History</h4>
+            <a href="#!" class="btn green right" onclick="downloadCSV()"><i class="material-icons left">file_download</i>Download CSV</a>
+            <p>Log of recent threshold breaches.</p>
+            <table class="striped responsive-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Worker</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>GPS</th>
+                    </tr>
+                </thead>
+                <tbody id="alerts-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
         </div>
     </div>
 

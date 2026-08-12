@@ -19,6 +19,8 @@ public class SensorData {
     private float temp;
     private float envTemp;
     private float gas;
+    private String status;
+    private String reason;
     private double latitude;
     private double longitude;
     private LocalDateTime timestamp = LocalDateTime.now();
@@ -38,6 +40,10 @@ public class SensorData {
     public void setTemp(float temp) { this.temp = temp; }
     public float getEnvTemp() { return envTemp; }
     public void setEnvTemp(float envTemp) { this.envTemp = envTemp; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
     public float getGas() { return gas; }
     public void setGas(float gas) { this.gas = gas; }
     public double getLatitude() { return latitude; }

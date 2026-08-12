@@ -229,14 +229,85 @@ document.getElementById('envTempRange').addEventListener('input', function(e) {
     document.getElementById('envTempVal').innerText = e.target.value;
 });
 
+// Alerts Logic
+let alertData = [];
+
+async function fetchAlerts() {
+    try {
+        const response = await fetch('/api/alerts');
+        if (response.ok) {
+            alertData = await response.json();
+            let tbody = document.getElementById('alerts-table-body');
+            tbody.innerHTML = '';
+            
+            alertData.forEach(alert => {
+                let row = `<tr>
+                    <td>${new Date(alert.timestamp).toLocaleString()}</td>
+                    <td>${alert.workerId}</td>
+                    <td><span class="new badge ${alert.status === 'red' ? 'red' : 'orange'}" data-badge-caption="${alert.status.toUpperCase()}"></span></td>
+                    <td>${alert.reason}</td>
+                    <td><a href="https://maps.google.com/?q=${alert.latitude},${alert.longitude}" target="_blank">${alert.latitude.toFixed(4)}, ${alert.longitude.toFixed(4)}</a></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            
+            // Update total historical alerts count
+            document.getElementById('alert-count').innerText = alertData.length;
+        }
+    } catch (e) { console.error("Failed to fetch alerts", e); }
+}
+
+function downloadCSV() {
+    if (alertData.length === 0) {
+        M.toast({html: 'No alerts to download!'});
+        return;
+    }
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Timestamp,Worker ID,Status,Reason,Latitude,Longitude,SpO2,HR,Body Temp,Env Temp,Gas\n";
+    
+    alertData.forEach(function(alert) {
+        let row = [
+            alert.timestamp,
+            alert.workerId,
+            alert.status,
+            `"${alert.reason}"`,
+            alert.latitude,
+            alert.longitude,
+            alert.spo2,
+            alert.heartRate,
+            alert.temp,
+            alert.envTemp,
+            alert.gas
+        ].join(",");
+        csvContent += row + "\n";
+    });
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "alert_history.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Materialize components
     var elems = document.querySelectorAll('.fixed-action-btn');
     M.FloatingActionButton.init(elems, {});
     
     var modals = document.querySelectorAll('.modal');
-    M.Modal.init(modals, {});
+    // Hook the alerts modal to refresh data on open
+    M.Modal.init(modals, {
+        onOpenStart: function(modal, trigger) {
+            if (modal.id === 'alerts-modal') {
+                fetchAlerts();
+            }
+        }
+    });
     
+    fetchAlerts(); // Load initial alert count
     loadSettings();
     initMap();
     renderDashboard();
