@@ -32,14 +32,14 @@ public class TelemetryController {
         boolean ignoreHrSpo2 = (data.getHeartRate() == 0 && data.getSpo2() == 0);
 
         // Check Temp & Gas
-        if (data.getTemp() > settings.getMaxTemp() || data.getGas() > settings.getMaxGas()) {
+        if (data.getTemp() > settings.getMaxTemp() || data.getEnvTemp() > settings.getMaxEnvTemp() || data.getGas() > settings.getMaxGas()) {
             status = "red";
-        } else if (data.getTemp() > settings.getMaxTemp() * 0.95 || data.getGas() > settings.getMaxGas() * 0.8) {
+        } else if (data.getTemp() > settings.getMaxTemp() * 0.95 || data.getEnvTemp() > settings.getMaxEnvTemp() * 0.95 || data.getGas() > settings.getMaxGas() * 0.8) {
             status = "yellow";
         }
 
-        // Check Heart Rate & SpO2 only if they are not reading 0
-        if (!ignoreHrSpo2) {
+        // Check Heart Rate & SpO2 only if they are enabled and not reading 0
+        if (settings.isCheckHrSpo2() && !ignoreHrSpo2) {
             if (data.getHeartRate() > settings.getMaxHr() || data.getHeartRate() < settings.getMinHr() || data.getSpo2() < settings.getMinSpo2()) {
                 status = "red";
             } else if (data.getHeartRate() > settings.getMaxHr() * 0.9 || data.getSpo2() < settings.getMinSpo2() + 2) {

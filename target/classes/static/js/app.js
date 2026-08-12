@@ -173,18 +173,28 @@ async function loadSettings() {
         document.getElementById('set-gas').value = gasPpm;
         document.getElementById('val-gas').innerText = gasPpm;
         
-        document.getElementById('set-spo2').value = currentSettings.minSpo2;
-        document.getElementById('val-spo2').innerText = currentSettings.minSpo2;
+        if (currentSettings.maxHr !== undefined) {
+            document.getElementById('hrRange').value = currentSettings.maxHr;
+            document.getElementById('hrVal').innerText = currentSettings.maxHr;
+            document.getElementById('spo2Range').value = currentSettings.minSpo2;
+            document.getElementById('spo2Val').innerText = currentSettings.minSpo2;
+        }
         
-        document.getElementById('set-maxhr').value = currentSettings.maxHr;
-        document.getElementById('val-maxhr').innerText = currentSettings.maxHr;
+        if (currentSettings.maxEnvTemp !== undefined) {
+            document.getElementById('envTempRange').value = currentSettings.maxEnvTemp;
+            document.getElementById('envTempVal').innerText = currentSettings.maxEnvTemp;
+            document.getElementById('checkHrSpo2Toggle').checked = currentSettings.checkHrSpo2;
+        }
     } catch (e) { console.error("Failed to load settings", e); }
 }
 
 async function saveSettings() {
     currentSettings.maxTemp = parseFloat(document.getElementById('set-temp').value);
-    currentSettings.minSpo2 = parseInt(document.getElementById('set-spo2').value);
-    currentSettings.maxHr = parseInt(document.getElementById('set-maxhr').value);
+    currentSettings.minSpo2 = parseInt(document.getElementById('spo2Range').value);
+    currentSettings.maxHr = parseInt(document.getElementById('hrRange').value);
+    currentSettings.minHr = 50;
+    currentSettings.maxEnvTemp = parseFloat(document.getElementById('envTempRange').value);
+    currentSettings.checkHrSpo2 = document.getElementById('checkHrSpo2Toggle').checked;
     
     // Convert UI PPM back to normalized 0-1 for backend
     let gasPpm = parseInt(document.getElementById('set-gas').value);
@@ -202,8 +212,21 @@ async function saveSettings() {
 // Update labels when sliders move
 document.querySelectorAll('input[type=range]').forEach(input => {
     input.addEventListener('input', function() {
-        document.getElementById('val-' + this.id.split('-')[1]).innerText = this.value;
+        let labelId = 'val-' + this.id.split('-')[1]; // For set-temp, set-gas
+        if (document.getElementById(labelId)) {
+            document.getElementById(labelId).innerText = this.value;
+        }
     });
+});
+
+document.getElementById('hrRange').addEventListener('input', function(e) {
+    document.getElementById('hrVal').innerText = e.target.value;
+});
+document.getElementById('spo2Range').addEventListener('input', function(e) {
+    document.getElementById('spo2Val').innerText = e.target.value;
+});
+document.getElementById('envTempRange').addEventListener('input', function(e) {
+    document.getElementById('envTempVal').innerText = e.target.value;
 });
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -16,6 +16,9 @@ public class ThresholdSettings {
     private int minSpo2 = 90;      // Default 90%
     private int maxHr = 120;       // Default 120 BPM
     private int minHr = 50;        // Default 50 BPM
+    
+    private boolean checkHrSpo2 = true; // Default true
+    private float maxEnvTemp = 45.0f;   // Default 45C
 
     public ThresholdSettings() {}
 
@@ -31,4 +34,8 @@ public class ThresholdSettings {
     public void setMaxHr(int maxHr) { this.maxHr = maxHr; }
     public int getMinHr() { return minHr; }
     public void setMinHr(int minHr) { this.minHr = minHr; }
+    public boolean isCheckHrSpo2() { return checkHrSpo2; }
+    public void setCheckHrSpo2(boolean checkHrSpo2) { this.checkHrSpo2 = checkHrSpo2; }
+    public float getMaxEnvTemp() { return maxEnvTemp; }
+    public void setMaxEnvTemp(float maxEnvTemp) { this.maxEnvTemp = maxEnvTemp; }
 }
