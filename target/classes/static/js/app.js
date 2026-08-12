@@ -6,7 +6,7 @@ function updateCardDOM(worker) {
         card = document.createElement('div');
         card.id = 'worker-card-' + worker.id;
         card.className = "col s12 m6 l4";
-        document.getElementById('workers-container').appendChild(card);
+        document.getElementById('workers-grid').appendChild(card);
         isNew = true;
     }
 
@@ -139,7 +139,7 @@ async function renderDashboard() {
     });
 
     // Clean up DOM for deleted workers
-    Array.from(document.getElementById('workers-container').children).forEach(child => {
+    Array.from(document.getElementById('workers-grid').children).forEach(child => {
         let id = child.id.replace('worker-card-', '');
         if (!currentIds.includes(id)) {
             child.remove();
