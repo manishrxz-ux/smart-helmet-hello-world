@@ -1,42 +1,53 @@
 function generateCard(worker) {
-    const badgeColor = worker.status === 'green' ? 'bg-green' : (worker.status === 'yellow' ? 'bg-yellow' : 'bg-red');
+    let statusColor = "green";
+    let icon = "check_circle";
     
+    if (worker.status === "red") {
+        statusColor = "red";
+        icon = "error";
+    } else if (worker.status === "yellow") {
+        statusColor = "orange";
+        icon = "warning";
+    }
+
+    // Convert gas back to PPM to match OLED logic: (gasRaw / 4095) * 9600 + 400
+    let ppm = Math.round((worker.gas * 9600) + 400);
+
+    // Highlighting logic
+    let tempClass = worker.temp > currentSettings.maxTemp ? "red-text bold" : "";
+    let gasClass = worker.gas > currentSettings.maxGas ? "red-text bold" : "";
+    let spo2Class = (worker.spo2 < currentSettings.minSpo2 && worker.spo2 > 0) ? "red-text bold" : "";
+    let hrClass = (worker.hr > currentSettings.maxHr && worker.hr > 0) ? "red-text bold" : "";
+
     return `
         <div class="col s12 m6 l4">
-            <div class="card worker-card hoverable">
+            <div class="card hoverable worker-card">
                 <div class="card-content">
-                    <span class="status-badge ${badgeColor}">${worker.status}</span>
-                    <span class="card-title">${worker.name}</span>
-                    <p class="grey-text">${worker.id}</p>
-                    
-                    <div class="sensor-grid">
-                        <div class="sensor-item">
-                            <i class="material-icons">favorite</i>
-                            <div>
-                                <span class="sensor-value">${worker.hr} bpm</span>
-                                <span class="sensor-label">Heart Rate</span>
-                            </div>
+                    <span class="card-title truncate">
+                        <i class="material-icons ${statusColor}-text status-icon">${icon}</i>
+                        ${worker.name}
+                    </span>
+                    <div class="divider" style="margin: 10px 0;"></div>
+                    <div class="row" style="margin-bottom: 0;">
+                        <div class="col s6 metric-box">
+                            <i class="material-icons tiny grey-text">favorite</i>
+                            <span class="${hrClass}">${worker.hr} bpm</span>
+                            <div class="metric-label">Heart Rate</div>
                         </div>
-                        <div class="sensor-item">
-                            <i class="material-icons">thermostat</i>
-                            <div>
-                                <span class="sensor-value">${worker.temp} °C</span>
-                                <span class="sensor-label">Body Temp</span>
-                            </div>
+                        <div class="col s6 metric-box">
+                            <i class="material-icons tiny grey-text">opacity</i>
+                            <span class="${spo2Class}">${worker.spo2}%</span>
+                            <div class="metric-label">SpO2 Level</div>
                         </div>
-                        <div class="sensor-item">
-                            <i class="material-icons">air</i>
-                            <div>
-                                <span class="sensor-value">${worker.spo2} %</span>
-                                <span class="sensor-label">SpO2 (Oxygen)</span>
-                            </div>
+                        <div class="col s6 metric-box" style="margin-top: 15px;">
+                            <i class="material-icons tiny grey-text">thermostat</i>
+                            <span class="${tempClass}">${worker.temp.toFixed(1)}&deg;C</span>
+                            <div class="metric-label">Body Temp</div>
                         </div>
-                        <div class="sensor-item">
-                            <i class="material-icons">warning</i>
-                            <div>
-                                <span class="sensor-value">${worker.gas} ppm</span>
-                                <span class="sensor-label">Toxic Gas</span>
-                            </div>
+                        <div class="col s6 metric-box" style="margin-top: 15px;">
+                            <i class="material-icons tiny grey-text">air</i>
+                            <span class="${gasClass}">${ppm} ppm</span>
+                            <div class="metric-label">Toxic Gas</div>
                         </div>
                     </div>
                 </div>
@@ -166,5 +177,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     initMap();
     renderDashboard();
-    setInterval(renderDashboard, 5000);
+    setInterval(renderDashboard, 2000);
 });

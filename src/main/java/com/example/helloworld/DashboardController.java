@@ -42,4 +42,13 @@ public class DashboardController {
         }
         return result;
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/api/workers/{id}")
+    public org.springframework.http.ResponseEntity<?> deleteWorker(@org.springframework.web.bind.annotation.PathVariable String id) {
+        if (workerRepository.existsById(id)) {
+            workerRepository.deleteById(id);
+            return org.springframework.http.ResponseEntity.ok().build();
+        }
+        return org.springframework.http.ResponseEntity.notFound().build();
+    }
 }
