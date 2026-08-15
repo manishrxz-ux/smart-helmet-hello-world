@@ -33,12 +33,15 @@ public class DashboardController {
                 dto.temp = data.getTemp();
                 dto.envTemp = data.getEnvTemp();
                 dto.gas = data.getGas();
-                dto.lat = data.getLatitude();
-                dto.lng = data.getLongitude();
+                // Prefer Android Override GPS (w.getLatitude()) over ESP32 GPS
+                dto.lat = (w.getLatitude() != null) ? w.getLatitude() : data.getLatitude();
+                dto.lng = (w.getLongitude() != null) ? w.getLongitude() : data.getLongitude();
                 dto.timestamp = data.getTimestamp();
                 dto.secondsSinceUpdate = java.time.temporal.ChronoUnit.SECONDS.between(data.getTimestamp(), java.time.LocalDateTime.now());
             } else {
-                dto.hr = 0; dto.spo2 = 0; dto.temp = 0.0f; dto.gas = 0.0f; dto.lat = 0.0; dto.lng = 0.0;
+                dto.hr = 0; dto.spo2 = 0; dto.temp = 0.0f; dto.gas = 0.0f; 
+                dto.lat = (w.getLatitude() != null) ? w.getLatitude() : 0.0; 
+                dto.lng = (w.getLongitude() != null) ? w.getLongitude() : 0.0;
             }
             result.add(dto);
         }

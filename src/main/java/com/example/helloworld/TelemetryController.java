@@ -75,4 +75,16 @@ public class TelemetryController {
 
         return ResponseEntity.ok("{\"success\":true, \"status\":\"" + status + "\"}");
     }
+
+    @PostMapping("/api/location/{workerId}")
+    public ResponseEntity<?> updateLocation(@org.springframework.web.bind.annotation.PathVariable String workerId, @RequestBody SensorData locationData) {
+        Worker worker = workerRepository.findById(workerId).orElse(null);
+        if (worker != null) {
+            worker.setLatitude(locationData.getLatitude());
+            worker.setLongitude(locationData.getLongitude());
+            workerRepository.save(worker);
+            return ResponseEntity.ok("{\"success\":true}");
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
