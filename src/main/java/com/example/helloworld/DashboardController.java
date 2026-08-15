@@ -1,8 +1,8 @@
 package com.example.helloworld;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +33,8 @@ public class DashboardController {
                 dto.temp = data.getTemp();
                 dto.envTemp = data.getEnvTemp();
                 dto.gas = data.getGas();
-                // Prefer Android Override GPS (w.getLatitude()) over ESP32 GPS
-                dto.lat = (w.getLatitude() != null) ? w.getLatitude() : data.getLatitude();
-                dto.lng = (w.getLongitude() != null) ? w.getLongitude() : data.getLongitude();
+                dto.lat = (w.getLatitude() != null && w.getLatitude() != 0.0) ? w.getLatitude() : data.getLatitude();
+                dto.lng = (w.getLongitude() != null && w.getLongitude() != 0.0) ? w.getLongitude() : data.getLongitude();
                 dto.timestamp = data.getTimestamp();
                 dto.secondsSinceUpdate = java.time.temporal.ChronoUnit.SECONDS.between(data.getTimestamp(), java.time.LocalDateTime.now());
             } else {
@@ -48,12 +47,17 @@ public class DashboardController {
         return result;
     }
 
-    @org.springframework.web.bind.annotation.DeleteMapping("/api/workers/{id}")
-    public org.springframework.http.ResponseEntity<?> deleteWorker(@org.springframework.web.bind.annotation.PathVariable String id) {
+    @GetMapping("/api/alerts")
+    public List<SensorData> getAlerts() {
+        return sensorDataRepository.findTop50ByStatusInOrderByTimestampDesc(List.of("red", "yellow"));
+    }
+
+    @DeleteMapping("/api/workers/{id}")
+    public ResponseEntity<?> deleteWorker(@PathVariable String id) {
         if (workerRepository.existsById(id)) {
             workerRepository.deleteById(id);
-            return org.springframework.http.ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
         }
-        return org.springframework.http.ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
     }
 }

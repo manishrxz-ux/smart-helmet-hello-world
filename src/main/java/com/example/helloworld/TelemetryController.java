@@ -1,9 +1,7 @@
 package com.example.helloworld;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 @RestController
@@ -24,15 +22,12 @@ public class TelemetryController {
             return ResponseEntity.badRequest().body("Missing worker_id");
         }
 
-        // Fetch live thresholds from DB
         ThresholdSettings settings = settingsRepository.findById(1L).orElse(new ThresholdSettings());
 
-        // Determine status and reason
         String status = "green";
         StringBuilder reason = new StringBuilder();
         boolean ignoreHrSpo2 = (data.getHeartRate() == 0 && data.getSpo2() == 0);
 
-        // Check Temp & Gas
         if (data.getTemp() > settings.getMaxTemp() || data.getEnvTemp() > settings.getMaxEnvTemp() || data.getGas() > settings.getMaxGas()) {
             status = "red";
             if (data.getTemp() > settings.getMaxTemp()) reason.append("Body Temp High. ");
@@ -43,7 +38,6 @@ public class TelemetryController {
             reason.append("Warning (Temp/Gas). ");
         }
 
-        // Check Heart Rate & SpO2 only if they are enabled and not reading 0
         if (settings.isCheckHrSpo2() && !ignoreHrSpo2) {
             if (data.getHeartRate() > settings.getMaxHr() || data.getHeartRate() < settings.getMinHr() || data.getSpo2() < settings.getMinSpo2()) {
                 status = "red";
@@ -65,19 +59,21 @@ public class TelemetryController {
         data.setStatus(status);
         data.setReason(reason.toString().trim());
 
-        // Save sensor data
         sensorDataRepository.save(data);
 
-        // Update or create worker status
         Worker worker = workerRepository.findById(data.getWorkerId()).orElse(new Worker(data.getWorkerId(), "Worker " + data.getWorkerId(), "green"));
         worker.setStatus(status);
+        if (data.getLatitude() != 0.0 && data.getLongitude() != 0.0) {
+            worker.setLatitude(data.getLatitude());
+            worker.setLongitude(data.getLongitude());
+        }
         workerRepository.save(worker);
 
         return ResponseEntity.ok("{\"success\":true, \"status\":\"" + status + "\"}");
     }
 
     @PostMapping("/api/location/{workerId}")
-    public ResponseEntity<?> updateLocation(@org.springframework.web.bind.annotation.PathVariable String workerId, @RequestBody SensorData locationData) {
+    public ResponseEntity<?> updateLocation(@PathVariable String workerId, @RequestBody SensorData locationData) {
         Worker worker = workerRepository.findById(workerId).orElse(null);
         if (worker != null) {
             worker.setLatitude(locationData.getLatitude());

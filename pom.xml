@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.3</version>
+		<version>3.1.5</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>helloworld</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>helloworld</name>
-	<description>Demo project for Spring Boot on Render</description>
+	<artifactId>smart-helmet-backend-mysql</artifactId>
+	<version>1.0.0</version>
+	<name>smart-helmet-backend-mysql</name>
+	<description>Smart Helmet Backend with MySQL Shared Hosting Integration</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -29,6 +29,16 @@
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

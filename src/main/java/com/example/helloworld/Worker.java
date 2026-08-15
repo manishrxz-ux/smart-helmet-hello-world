@@ -5,8 +5,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Workers")
+@Table(name = "workers")
 public class Worker {
+
     @Id
     private String id;
     private String name;
@@ -15,6 +16,7 @@ public class Worker {
     private Double longitude;
 
     public Worker() {}
+
     public Worker(String id, String name, String status) {
         this.id = id;
         this.name = name;
@@ -23,12 +25,16 @@ public class Worker {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
     public Double getLatitude() { return latitude; }
     public void setLatitude(Double latitude) { this.latitude = latitude; }
+
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
 }
