@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Helmet - Material Dashboard</title>
-    <!-- Google Fonts: Roboto & Material Icons -->
+    <title>Smart Helmet - Material Dashboard (MySQL Shared Hosting)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body class="grey lighten-4">
 
-    <!-- Top App Bar -->
     <nav class="blue darken-3">
         <div class="nav-wrapper container">
             <a href="#" class="brand-logo"><i class="material-icons left" style="margin-top:2px;">engineering</i>Smart Helmet 2027</a>
@@ -28,11 +23,10 @@
         </div>
     </nav>
 
-    <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <h4>Alert Threshold Settings</h4>
-            <p>Customize the warning limits for the helmet sensors.</p>
+            <p>Customize warning limits saved directly to MySQL database.</p>
             
             <div class="row">
                 <div class="col s12 m6">
@@ -40,30 +34,24 @@
                     <p class="range-field"><input type="range" id="set-temp" min="35" max="42" step="0.1" value="38.0" /></p>
                 </div>
                 <div class="col s12 m6">
-                    <label>Max Gas (PPM): <span id="val-gas">500</span></label>
-                    <p class="range-field"><input type="range" id="set-gas" min="100" max="10000" step="100" value="500" /></p>
+                    <label>Max Gas (PPM): <span id="val-gas">700</span></label>
+                    <p class="range-field"><input type="range" id="set-gas" min="400" max="10000" step="100" value="700" /></p>
                 </div>
                 <div class="row">
                     <div class="col s12 m6">
                         <label>Min SpO2: <span id="spo2Val">90</span> %</label>
-                        <p class="range-field">
-                            <input type="range" id="spo2Range" min="70" max="100" value="90" />
-                        </p>
+                        <p class="range-field"><input type="range" id="spo2Range" min="70" max="100" value="90" /></p>
                     </div>
                     <div class="col s12 m6">
                         <label>Max Heart Rate: <span id="hrVal">120</span> BPM</label>
-                        <p class="range-field">
-                            <input type="range" id="hrRange" min="80" max="200" value="120" />
-                        </p>
+                        <p class="range-field"><input type="range" id="hrRange" min="80" max="200" value="120" /></p>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col s12 m6">
                         <label>Max Env Temp: <span id="envTempVal">45</span> &deg;C</label>
-                        <p class="range-field">
-                            <input type="range" id="envTempRange" min="20" max="60" value="45" />
-                        </p>
+                        <p class="range-field"><input type="range" id="envTempRange" min="20" max="60" value="45" /></p>
                     </div>
                     <div class="col s12 m6">
                         <label>Medical Sensors (HR & SpO2 Warning)</label>
@@ -84,12 +72,11 @@
         </div>
     </div>
 
-    <!-- Alerts Modal -->
     <div id="alerts-modal" class="modal bottom-sheet" style="max-height: 80%;">
         <div class="modal-content">
             <h4>Alert History</h4>
             <a href="#!" class="btn green right" onclick="downloadCSV()"><i class="material-icons left">file_download</i>Download CSV</a>
-            <p>Log of recent threshold breaches.</p>
+            <p>Log of recent threshold breaches saved in MySQL database.</p>
             <table class="striped responsive-table">
                 <thead>
                     <tr>
@@ -101,7 +88,7 @@
                     </tr>
                 </thead>
                 <tbody id="alerts-table-body">
-                    <!-- Populated by JS -->
+                    <!-- Injected by JS -->
                 </tbody>
             </table>
         </div>
@@ -110,32 +97,23 @@
         </div>
     </div>
 
-    <!-- Map Container -->
     <div id="map" style="height: 400px; width: 100%; z-index: 1;"></div>
 
-    <!-- Main Content -->
     <div class="container main-content">
         <div class="row">
             <div class="col s12">
                 <h4>Real-Time Telemetry</h4>
-                <p class="grey-text text-darken-1">Monitoring live sensor data from connected ESP32 helmets.</p>
+                <p class="grey-text text-darken-1">Monitoring live sensor data directly from MySQL DB.</p>
             </div>
         </div>
 
         <div class="row" id="workers-grid">
-            <!-- Material Cards Injected by JS -->
+            <!-- Injected by JS -->
         </div>
     </div>
 
-
-
-    <!-- Materialize JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
-    <!-- Custom JS -->
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ function updateCardDOM(worker) {
     if (!card) {
         card = document.createElement('div');
         card.id = 'worker-card-' + worker.id;
-        card.className = "col s12"; // Giant Card! Takes full width
+        card.className = "col s12";
         document.getElementById('workers-grid').appendChild(card);
         isNew = true;
     }
@@ -21,13 +21,11 @@ function updateCardDOM(worker) {
         icon = "warning";
     }
 
-    // Gas is now sent directly as PPM from the ESP32
     let ppm = Math.round(worker.gas);
 
-    // Online/Offline Logic
     let isOffline = false;
     if (worker.secondsSinceUpdate !== undefined) {
-        if (worker.secondsSinceUpdate > 15) { // Offline if no data for 15s
+        if (worker.secondsSinceUpdate > 15) {
             isOffline = true;
             statusColor = "grey";
             icon = "cloud_off";
@@ -35,7 +33,6 @@ function updateCardDOM(worker) {
     }
     let offlineBadge = isOffline ? '<span class="new badge grey" data-badge-caption="Offline"></span>' : '<span class="new badge green" data-badge-caption="Live"></span>';
 
-    // Highlighting logic
     let tempClass = worker.temp > currentSettings.maxTemp ? "red-text bold" : (worker.temp > currentSettings.maxTemp * 0.95 ? "orange-text" : "");
     let gasClass = worker.gas > currentSettings.maxGas ? "red-text bold" : (worker.gas > currentSettings.maxGas * 0.8 ? "orange-text" : "");
     let spo2Class = (worker.spo2 < currentSettings.minSpo2 && worker.spo2 > 0) ? "red-text bold" : ((worker.spo2 < currentSettings.minSpo2 + 2 && worker.spo2 > 0) ? "orange-text" : "");
@@ -85,31 +82,20 @@ function updateCardDOM(worker) {
             </div>
         </div>
     `;
-    
-    // Smooth DOM replacement
     card.innerHTML = html;
 }
 
-// Global Map and Marker Variables
 let map;
 let markers = {};
 
 function initMap() {
-    // Initialize map centered at Amravati, Maharashtra
     map = L.map('map').setView([20.9320, 77.7523], 13);
-    
-    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 }
 
 function updateMapMarker(id, name, lat, lng, status) {
-    let color = 'blue';
-    if (status === 'red') color = 'red';
-    else if (status === 'yellow') color = 'orange';
-    else if (status === 'green') color = 'green';
-    
     if (markers[id]) {
         markers[id].setLatLng([lat, lng]);
         markers[id].bindPopup(`<b>${name}</b><br>Status: ${status}`);
@@ -119,13 +105,11 @@ function updateMapMarker(id, name, lat, lng, status) {
     }
 }
 
-// Live Data Fetching
 async function fetchWorkersData() {
     try {
         const response = await fetch('/api/workers');
         if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
         console.error("Failed to fetch worker data:", error);
         return [];
@@ -147,7 +131,6 @@ async function renderDashboard() {
         }
     });
 
-    // Clean up DOM for deleted workers
     Array.from(document.getElementById('workers-grid').children).forEach(child => {
         let id = child.id.replace('worker-card-', '');
         if (!currentIds.includes(id)) {
@@ -156,8 +139,6 @@ async function renderDashboard() {
     });
 }
 
-// Initial fetch and set polling
-// Settings Logic
 let currentSettings = {};
 
 async function loadSettings() {
@@ -168,7 +149,6 @@ async function loadSettings() {
         document.getElementById('set-temp').value = currentSettings.maxTemp;
         document.getElementById('val-temp').innerText = currentSettings.maxTemp;
         
-        // Gas is now passed directly as PPM
         let gasPpm = Math.round(currentSettings.maxGas);
         document.getElementById('set-gas').value = gasPpm;
         document.getElementById('val-gas').innerText = gasPpm;
@@ -196,7 +176,6 @@ async function saveSettings() {
     currentSettings.maxEnvTemp = parseFloat(document.getElementById('envTempRange').value);
     currentSettings.checkHrSpo2 = document.getElementById('checkHrSpo2Toggle').checked;
     
-    // Gas is now passed directly as PPM
     let gasPpm = parseInt(document.getElementById('set-gas').value);
     currentSettings.maxGas = gasPpm;
 
@@ -206,30 +185,9 @@ async function saveSettings() {
         body: JSON.stringify(currentSettings)
     });
     
-    M.toast({html: 'Alert Thresholds Updated!'});
+    M.toast({html: 'Alert Thresholds Saved to MySQL Database!'});
 }
 
-// Update labels when sliders move
-document.querySelectorAll('input[type=range]').forEach(input => {
-    input.addEventListener('input', function() {
-        let labelId = 'val-' + this.id.split('-')[1]; // For set-temp, set-gas
-        if (document.getElementById(labelId)) {
-            document.getElementById(labelId).innerText = this.value;
-        }
-    });
-});
-
-document.getElementById('hrRange').addEventListener('input', function(e) {
-    document.getElementById('hrVal').innerText = e.target.value;
-});
-document.getElementById('spo2Range').addEventListener('input', function(e) {
-    document.getElementById('spo2Val').innerText = e.target.value;
-});
-document.getElementById('envTempRange').addEventListener('input', function(e) {
-    document.getElementById('envTempVal').innerText = e.target.value;
-});
-
-// Alerts Logic
 let alertData = [];
 
 async function fetchAlerts() {
@@ -252,7 +210,6 @@ async function fetchAlerts() {
                 tbody.innerHTML += row;
             });
             
-            // Update total historical alerts count
             document.getElementById('alert-count').innerText = alertData.length;
         }
     } catch (e) { console.error("Failed to fetch alerts", e); }
@@ -288,19 +245,17 @@ function downloadCSV() {
     var encodedUri = encodeURI(csvContent);
     var link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "alert_history.csv");
-    document.body.appendChild(link); // Required for FF
+    link.setAttribute("download", "alert_history_mysql.csv");
+    document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Materialize components
     var elems = document.querySelectorAll('.fixed-action-btn');
     M.FloatingActionButton.init(elems, {});
     
     var modals = document.querySelectorAll('.modal');
-    // Hook the alerts modal to refresh data on open
     M.Modal.init(modals, {
         onOpenStart: function(modal, trigger) {
             if (modal.id === 'alerts-modal') {
@@ -309,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    fetchAlerts(); // Load initial alert count
+    fetchAlerts();
     loadSettings();
     initMap();
     renderDashboard();

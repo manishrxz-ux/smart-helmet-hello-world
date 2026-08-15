@@ -6,4 +6,5 @@ import java.util.List;
 public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
     SensorData findFirstByWorkerIdOrderByTimestampDesc(String workerId);
     List<SensorData> findTop50ByStatusInOrderByTimestampDesc(List<String> statuses);
+    List<SensorData> findTop500ByStatusInOrderByTimestampDesc(List<String> statuses);
 }
