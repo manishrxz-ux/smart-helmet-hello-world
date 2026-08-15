@@ -21,6 +21,11 @@ public class DashboardController {
         List<Worker> workers = workerRepository.findAll();
         
         for (Worker w : workers) {
+            // Delete old mock workers (WRK-002, WRK-003, Sarah Smith, Michael Davis)
+            if (!w.getId().equals("WRK-001")) {
+                try { workerRepository.deleteById(w.getId()); } catch (Exception e) {}
+                continue;
+            }
             WorkerDataDTO dto = new WorkerDataDTO();
             dto.id = w.getId();
             dto.name = w.getName();
