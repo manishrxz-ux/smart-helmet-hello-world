@@ -20,9 +20,16 @@ public class DashboardController {
         List<WorkerDataDTO> result = new ArrayList<>();
         List<Worker> workers = workerRepository.findAll();
         
+        // Ensure WRK-001 always exists even right after a server restart
+        if (workers.isEmpty() || workers.stream().noneMatch(w -> w.getId().equalsIgnoreCase("WRK-001"))) {
+            Worker defaultWorker = new Worker("WRK-001", "Alex Johnson", "green");
+            workerRepository.save(defaultWorker);
+            workers = workerRepository.findAll();
+        }
+
         for (Worker w : workers) {
             // Delete old mock workers (WRK-002, WRK-003, Sarah Smith, Michael Davis)
-            if (!w.getId().equals("WRK-001")) {
+            if (!w.getId().equalsIgnoreCase("WRK-001")) {
                 try { workerRepository.deleteById(w.getId()); } catch (Exception e) {}
                 continue;
             }
