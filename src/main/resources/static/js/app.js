@@ -268,5 +268,32 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     initMap();
     renderDashboard();
-    setInterval(renderDashboard, 2000);
+    setInterval(renderDashboard, 3000);
+
+    // Instant 0ms Firebase Realtime Sync
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBtdNRaMjA215gENN7cOOnY_q1oXGVNv8",
+        databaseURL: "https://helmet-ee4de-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "helmet-ee4de",
+        storageBucket: "helmet-ee4de.firebasestorage.app"
+    };
+
+    if (typeof firebase !== 'undefined') {
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const dbRef = firebase.database().ref('workers');
+            dbRef.on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    Object.keys(val).forEach(key => {
+                        const worker = { id: key, ...val[key] };
+                        updateCardDOM(worker);
+                        if (worker.lat && worker.lng) {
+                            updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
+                        }
+                    });
+                }
+            });
+        } catch (e) { console.error("Firebase web init error:", e); }
+    }
 });
