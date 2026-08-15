@@ -21,8 +21,8 @@ function updateCardDOM(worker) {
         icon = "warning";
     }
 
-    // Convert gas back to PPM to match OLED logic: (gasRaw / 4095) * 9600 + 400
-    let ppm = Math.round((worker.gas * 9600) + 400);
+    // Gas is now sent directly as PPM from the ESP32
+    let ppm = Math.round(worker.gas);
 
     // Online/Offline Logic
     let isOffline = false;
@@ -168,8 +168,8 @@ async function loadSettings() {
         document.getElementById('set-temp').value = currentSettings.maxTemp;
         document.getElementById('val-temp').innerText = currentSettings.maxTemp;
         
-        // Convert normalized gas back to PPM for UI roughly
-        let gasPpm = Math.round(currentSettings.maxGas * 10000);
+        // Gas is now passed directly as PPM
+        let gasPpm = Math.round(currentSettings.maxGas);
         document.getElementById('set-gas').value = gasPpm;
         document.getElementById('val-gas').innerText = gasPpm;
         
@@ -196,9 +196,9 @@ async function saveSettings() {
     currentSettings.maxEnvTemp = parseFloat(document.getElementById('envTempRange').value);
     currentSettings.checkHrSpo2 = document.getElementById('checkHrSpo2Toggle').checked;
     
-    // Convert UI PPM back to normalized 0-1 for backend
+    // Gas is now passed directly as PPM
     let gasPpm = parseInt(document.getElementById('set-gas').value);
-    currentSettings.maxGas = gasPpm / 10000.0;
+    currentSettings.maxGas = gasPpm;
 
     await fetch('/api/settings', {
         method: 'POST',
