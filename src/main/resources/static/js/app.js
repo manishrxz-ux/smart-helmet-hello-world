@@ -287,6 +287,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (val) {
                     Object.keys(val).forEach(key => {
                         const worker = { id: key, ...val[key] };
+                        if (!worker.name || worker.name.startsWith("Worker WRK")) {
+                            worker.name = "Alex Johnson";
+                        }
                         updateCardDOM(worker);
                         if (worker.lat && worker.lng) {
                             updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');

@@ -61,7 +61,8 @@ public class TelemetryController {
 
         sensorDataRepository.save(data);
 
-        Worker worker = workerRepository.findById(data.getWorkerId()).orElse(new Worker(data.getWorkerId(), "Worker " + data.getWorkerId(), "green"));
+        Worker worker = workerRepository.findById(data.getWorkerId())
+                .orElse(new Worker(data.getWorkerId(), "Alex Johnson", "green"));
         worker.setStatus(status);
         if (data.getLatitude() != 0.0 && data.getLongitude() != 0.0) {
             worker.setLatitude(data.getLatitude());
