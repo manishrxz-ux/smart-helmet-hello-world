@@ -47,11 +47,6 @@ public class DashboardController {
         return result;
     }
 
-    @GetMapping("/api/alerts")
-    public List<SensorData> getAlerts() {
-        return sensorDataRepository.findTop50ByStatusInOrderByTimestampDesc(List.of("red", "yellow"));
-    }
-
     @DeleteMapping("/api/workers/{id}")
     public ResponseEntity<?> deleteWorker(@PathVariable String id) {
         if (workerRepository.existsById(id)) {
