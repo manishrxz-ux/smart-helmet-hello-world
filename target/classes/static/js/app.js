@@ -38,6 +38,13 @@ function updateCardDOM(worker) {
     let spo2Class = (worker.spo2 < currentSettings.minSpo2 && worker.spo2 > 0) ? "red-text bold" : ((worker.spo2 < currentSettings.minSpo2 + 2 && worker.spo2 > 0) ? "orange-text" : "");
     let hrClass = (worker.hr > currentSettings.maxHr && worker.hr > 0) ? "red-text bold" : ((worker.hr > currentSettings.maxHr * 0.9 && worker.hr > 0) ? "orange-text" : "");
 
+    let sosAlertText = "";
+    if (worker.sos) {
+        statusColor = "red";
+        icon = "emergency";
+        sosAlertText = `<div style="text-align: center; color: red; font-size: 2rem; font-weight: bold; animation: blinker 1s linear infinite;">EMERGENCY: SOS ACTIVE</div>`;
+    }
+
     let html = `
         <div class="card hoverable worker-card" style="padding: 20px;">
             <div class="card-content">
@@ -45,6 +52,7 @@ function updateCardDOM(worker) {
                     <i class="material-icons ${statusColor}-text status-icon" style="font-size: 3rem; vertical-align: middle;">${icon}</i>
                     ${worker.name} ${offlineBadge}
                 </span>
+                ${sosAlertText}
                 <div class="divider" style="margin: 20px 0;"></div>
                 <div style="text-align: center; margin-bottom: 20px;">
                     <a class="waves-effect waves-light btn red darken-2" onclick="triggerSos('${worker.id}')" style="border-radius: 20px; font-weight: bold; width: 80%;">

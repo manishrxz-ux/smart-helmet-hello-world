@@ -62,15 +62,20 @@ public class TelemetryController {
         data.setStatus(status);
         data.setReason(reason.toString().trim());
 
-        sensorDataRepository.save(data);
-
         Worker worker = workerRepository.findById(data.getWorkerId())
                 .orElse(new Worker(data.getWorkerId(), "Alex Johnson", "green"));
-        worker.setStatus(status);
-        if (data.getLatitude() != 0.0 && data.getLongitude() != 0.0) {
+
+        if (data.getLatitude() == 0.0 && data.getLongitude() == 0.0) {
+            if (worker.getLatitude() != null) data.setLatitude(worker.getLatitude());
+            if (worker.getLongitude() != null) data.setLongitude(worker.getLongitude());
+        } else {
             worker.setLatitude(data.getLatitude());
             worker.setLongitude(data.getLongitude());
         }
+        
+        sensorDataRepository.save(data);
+        
+        worker.setStatus(status);
         
         boolean includeRemoteSos = false;
         if (worker.isRemoteSosActive()) {
