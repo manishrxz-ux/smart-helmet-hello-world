@@ -145,6 +145,10 @@ async function triggerSos(workerId) {
     }
 }
 
+async function triggerRemoteSos() {
+    triggerSos('WRK-001');
+}
+
 async function renderDashboard() {
     const workers = await fetchWorkersData();
     
