@@ -132,9 +132,15 @@ async function fetchWorkersData() {
 async function triggerSos(workerId) {
     if (confirm("Are you sure you want to trigger the helmet's emergency alarm?")) {
         try {
-            const response = await fetch('/api/workers/' + workerId + '/sos', { method: 'POST' });
+            // Write remoteSos:true directly to Firebase RTDB for instant (<1s) delivery
+            const firebaseUrl = `https://helmet-ee4de-default-rtdb.asia-southeast1.firebasedatabase.app/workers/${workerId}/remoteSos.json?auth=67nUuCndgu0flYL6V0bPIE4pKdPseDCD7DzQhRpz`;
+            const response = await fetch(firebaseUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: 'true'
+            });
             if (response.ok) {
-                M.toast({html: 'SOS Signal Sent! Helmet alarm will trigger shortly.'});
+                M.toast({html: '🚨 SOS Signal Sent! Helmet will beep within 1 second.'});
             } else {
                 M.toast({html: 'Failed to trigger SOS.'});
             }
