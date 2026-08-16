@@ -119,24 +119,12 @@ async function fetchWorkersData() {
 async function renderDashboard() {
     const workers = await fetchWorkersData();
     
+    // Only update counts from MySQL
     document.getElementById('active-count').innerText = workers.length;
     document.getElementById('alert-count').innerText = workers.filter(w => w.status === 'red').length;
     
-    let currentIds = workers.map(w => w.id);
-    
-    workers.forEach(worker => {
-        updateCardDOM(worker);
-        if(worker.lat && worker.lng) {
-            updateMapMarker(worker.id, worker.name, worker.lat, worker.lng, worker.status);
-        }
-    });
-
-    Array.from(document.getElementById('workers-grid').children).forEach(child => {
-        let id = child.id.replace('worker-card-', '');
-        if (!currentIds.includes(id)) {
-            child.remove();
-        }
-    });
+    // Do NOT update the DOM or Map from MySQL to prevent jumping/flashing
+    // All real-time rendering is now handled by the Firebase listener
 }
 
 let currentSettings = {};
