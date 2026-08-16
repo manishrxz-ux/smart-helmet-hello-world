@@ -54,11 +54,6 @@ function updateCardDOM(worker) {
                 </span>
                 ${sosAlertText}
                 <div class="divider" style="margin: 20px 0;"></div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <a class="waves-effect waves-light btn red darken-2" onclick="triggerSos('${worker.id}')" style="border-radius: 20px; font-weight: bold; width: 80%;">
-                        <i class="material-icons left">campaign</i>Trigger Helmet SOS
-                    </a>
-                </div>
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; text-align: center;">
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
