@@ -67,4 +67,15 @@ public class DashboardController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/api/workers/{id}/sos")
+    public ResponseEntity<?> triggerRemoteSos(@PathVariable String id) {
+        Worker worker = workerRepository.findById(id).orElse(null);
+        if (worker != null) {
+            worker.setRemoteSosActive(true);
+            workerRepository.save(worker);
+            return ResponseEntity.ok("{\"success\":true}");
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

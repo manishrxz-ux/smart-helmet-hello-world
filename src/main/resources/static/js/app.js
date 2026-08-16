@@ -46,6 +46,11 @@ function updateCardDOM(worker) {
                     ${worker.name} ${offlineBadge}
                 </span>
                 <div class="divider" style="margin: 20px 0;"></div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <a class="waves-effect waves-light btn red darken-2" onclick="triggerSos('${worker.id}')" style="border-radius: 20px; font-weight: bold; width: 80%;">
+                        <i class="material-icons left">campaign</i>Trigger Helmet SOS
+                    </a>
+                </div>
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; text-align: center;">
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
@@ -113,6 +118,22 @@ async function fetchWorkersData() {
     } catch (error) {
         console.error("Failed to fetch worker data:", error);
         return [];
+    }
+}
+
+async function triggerSos(workerId) {
+    if (confirm("Are you sure you want to trigger the helmet's emergency alarm?")) {
+        try {
+            const response = await fetch('/api/workers/' + workerId + '/sos', { method: 'POST' });
+            if (response.ok) {
+                M.toast({html: 'SOS Signal Sent! Helmet alarm will trigger shortly.'});
+            } else {
+                M.toast({html: 'Failed to trigger SOS.'});
+            }
+        } catch (e) {
+            console.error("SOS trigger error:", e);
+            M.toast({html: 'Error triggering SOS.'});
+        }
     }
 }
 

@@ -14,6 +14,7 @@ public class Worker {
     private String status;
     private Double latitude;
     private Double longitude;
+    private boolean remoteSosActive = false;
 
     public Worker() {}
 
@@ -37,4 +38,7 @@ public class Worker {
 
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public boolean isRemoteSosActive() { return remoteSosActive; }
+    public void setRemoteSosActive(boolean remoteSosActive) { this.remoteSosActive = remoteSosActive; }
 }

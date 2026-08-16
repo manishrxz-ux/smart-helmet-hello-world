@@ -28,7 +28,10 @@ public class TelemetryController {
         StringBuilder reason = new StringBuilder();
         boolean ignoreHrSpo2 = (data.getHeartRate() == 0 && data.getSpo2() == 0);
 
-        if (data.getTemp() > settings.getMaxTemp() || data.getEnvTemp() > settings.getMaxEnvTemp() || data.getGas() > settings.getMaxGas()) {
+        if (data.isSos()) {
+            status = "red";
+            reason.append("EMERGENCY: SOS Switch Pressed! ");
+        } else if (data.getTemp() > settings.getMaxTemp() || data.getEnvTemp() > settings.getMaxEnvTemp() || data.getGas() > settings.getMaxGas()) {
             status = "red";
             if (data.getTemp() > settings.getMaxTemp()) reason.append("Body Temp High. ");
             if (data.getEnvTemp() > settings.getMaxEnvTemp()) reason.append("Env Temp High. ");
@@ -68,8 +71,17 @@ public class TelemetryController {
             worker.setLatitude(data.getLatitude());
             worker.setLongitude(data.getLongitude());
         }
+        
+        boolean includeRemoteSos = false;
+        if (worker.isRemoteSosActive()) {
+            includeRemoteSos = true;
+            worker.setRemoteSosActive(false); // Reset so it doesn't beep forever
+        }
         workerRepository.save(worker);
 
+        if (includeRemoteSos) {
+            return ResponseEntity.ok("{\"success\":true, \"status\":\"" + status + "\", \"sos\":true}");
+        }
         return ResponseEntity.ok("{\"success\":true, \"status\":\"" + status + "\"}");
     }
 

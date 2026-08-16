@@ -46,6 +46,11 @@ function updateCardDOM(worker) {
                     ${worker.name} ${offlineBadge}
                 </span>
                 <div class="divider" style="margin: 20px 0;"></div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <a class="waves-effect waves-light btn red darken-2" onclick="triggerSos('${worker.id}')" style="border-radius: 20px; font-weight: bold; width: 80%;">
+                        <i class="material-icons left">campaign</i>Trigger Helmet SOS
+                    </a>
+                </div>
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; text-align: center;">
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
@@ -62,13 +67,13 @@ function updateCardDOM(worker) {
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
                         <i class="material-icons grey-text" style="font-size: 2.5rem;">thermostat</i>
-                        <div class="${tempClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.temp ? worker.temp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div class="${tempClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.temp ? worker.temp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;F</span></div>
                         <div style="font-size: 1.5rem; color: #757575;">Body Temp</div>
                     </div>
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
                         <i class="material-icons grey-text" style="font-size: 2.5rem;">ac_unit</i>
-                        <div style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.envTemp ? worker.envTemp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.envTemp ? worker.envTemp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;F</span></div>
                         <div style="font-size: 1.5rem; color: #757575;">Env Temp</div>
                     </div>
                     
@@ -116,27 +121,31 @@ async function fetchWorkersData() {
     }
 }
 
+async function triggerSos(workerId) {
+    if (confirm("Are you sure you want to trigger the helmet's emergency alarm?")) {
+        try {
+            const response = await fetch('/api/workers/' + workerId + '/sos', { method: 'POST' });
+            if (response.ok) {
+                M.toast({html: 'SOS Signal Sent! Helmet alarm will trigger shortly.'});
+            } else {
+                M.toast({html: 'Failed to trigger SOS.'});
+            }
+        } catch (e) {
+            console.error("SOS trigger error:", e);
+            M.toast({html: 'Error triggering SOS.'});
+        }
+    }
+}
+
 async function renderDashboard() {
     const workers = await fetchWorkersData();
     
+    // Only update counts from MySQL
     document.getElementById('active-count').innerText = workers.length;
     document.getElementById('alert-count').innerText = workers.filter(w => w.status === 'red').length;
     
-    let currentIds = workers.map(w => w.id);
-    
-    workers.forEach(worker => {
-        updateCardDOM(worker);
-        if(worker.lat && worker.lng) {
-            updateMapMarker(worker.id, worker.name, worker.lat, worker.lng, worker.status);
-        }
-    });
-
-    Array.from(document.getElementById('workers-grid').children).forEach(child => {
-        let id = child.id.replace('worker-card-', '');
-        if (!currentIds.includes(id)) {
-            child.remove();
-        }
-    });
+    // Do NOT update the DOM or Map from MySQL to prevent jumping/flashing
+    // All real-time rendering is now handled by the Firebase listener
 }
 
 let currentSettings = {};
@@ -278,6 +287,27 @@ document.addEventListener('DOMContentLoaded', function() {
         storageBucket: "helmet-ee4de.firebasestorage.app"
     };
 
+    let firebaseWorkers = {};
+
+    function updateUIFromFirebase() {
+        Object.keys(firebaseWorkers).forEach(key => {
+            const worker = { id: key, ...firebaseWorkers[key] };
+            if (!worker.name || worker.name.startsWith("Worker WRK")) {
+                worker.name = "Alex Johnson";
+            }
+            
+            if (worker.timestamp) {
+                worker.secondsSinceUpdate = (Date.now() - worker.timestamp) / 1000;
+                if (worker.secondsSinceUpdate > 10) worker.status = "offline";
+            }
+            
+            updateCardDOM(worker);
+            if (worker.lat && worker.lng) {
+                updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
+            }
+        });
+    }
+
     if (typeof firebase !== 'undefined') {
         try {
             firebase.initializeApp(firebaseConfig);
@@ -285,18 +315,13 @@ document.addEventListener('DOMContentLoaded', function() {
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
-                    Object.keys(val).forEach(key => {
-                        const worker = { id: key, ...val[key] };
-                        if (!worker.name || worker.name.startsWith("Worker WRK")) {
-                            worker.name = "Alex Johnson";
-                        }
-                        updateCardDOM(worker);
-                        if (worker.lat && worker.lng) {
-                            updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
-                        }
-                    });
+                    firebaseWorkers = val;
+                    updateUIFromFirebase();
                 }
             });
+            
+            // Local ticker to detect offline status even when Firebase doesn't trigger
+            setInterval(updateUIFromFirebase, 1000);
         } catch (e) { console.error("Firebase web init error:", e); }
     }
 });
