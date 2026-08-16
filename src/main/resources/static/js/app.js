@@ -62,13 +62,13 @@ function updateCardDOM(worker) {
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
                         <i class="material-icons grey-text" style="font-size: 2.5rem;">thermostat</i>
-                        <div class="${tempClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.temp ? worker.temp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div class="${tempClass}" style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.temp ? worker.temp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;F</span></div>
                         <div style="font-size: 1.5rem; color: #757575;">Body Temp</div>
                     </div>
                     
                     <div style="flex: 1; min-width: 150px; margin: 10px;">
                         <i class="material-icons grey-text" style="font-size: 2.5rem;">ac_unit</i>
-                        <div style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.envTemp ? worker.envTemp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;C</span></div>
+                        <div style="font-size: 3rem; font-weight: bold; line-height: 1.2;">${worker.envTemp ? worker.envTemp.toFixed(1) : "0.0"}<span style="font-size: 1.5rem;">&deg;F</span></div>
                         <div style="font-size: 1.5rem; color: #757575;">Env Temp</div>
                     </div>
                     
