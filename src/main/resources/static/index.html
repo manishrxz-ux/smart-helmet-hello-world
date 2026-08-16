@@ -4,30 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Smart Helmet 2027</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Materialize CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
-            background-color: #f5f6fa;
+            background-color: #0b1120;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
         .login-card {
-            padding: 30px;
-            border-radius: 12px;
+            padding: 40px 30px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
         }
         .login-card .card-title {
             text-align: center;
-            margin-bottom: 30px;
-            font-weight: bold;
-            color: #2c3e50;
+            margin-bottom: 40px;
+            font-weight: 800;
+            color: #00f2fe;
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px !important;
+        }
+        .input-field input[type=text], .input-field input[type=password] {
+            color: #ffffff;
+            border-bottom: 1px solid #475569;
+        }
+        .input-field input[type=text]:focus, .input-field input[type=password]:focus {
+            border-bottom: 1px solid #00f2fe;
+            box-shadow: 0 1px 0 0 #00f2fe;
+        }
+        .input-field .prefix {
+            color: #94a3b8;
+        }
+        .input-field .prefix.active {
+            color: #00f2fe;
+        }
+        .btn-login {
+            background: linear-gradient(90deg, #00f2fe, #4facfe);
+            font-weight: 800;
+            border-radius: 8px;
+            height: 48px;
+            line-height: 48px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            margin-top: 20px;
+        }
+        .btn-login:hover {
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6);
+            background: linear-gradient(90deg, #00c3cc, #3d8cc9);
         }
     </style>
 </head>
@@ -35,24 +65,24 @@
     
     <div class="card login-card z-depth-3">
         <h4 class="card-title">
-            <i class="material-icons blue-text" style="font-size: 36px; vertical-align: middle;">security</i>
-            Admin Login
+            <i class="material-icons" style="font-size: 36px; vertical-align: middle; color:#00f2fe; margin-right: 10px;">security</i>
+            Helmetsafe Pro
         </h4>
         <form id="loginForm">
             <div class="input-field">
                 <i class="material-icons prefix">person</i>
                 <input id="username" type="text" required>
-                <label for="username">Username</label>
+                <label for="username">Admin Username</label>
             </div>
             <div class="input-field">
                 <i class="material-icons prefix">lock</i>
                 <input id="password" type="password" required>
                 <label for="password">Password</label>
             </div>
-            <p id="errorMsg" class="red-text center-align" style="display: none;">Invalid credentials</p>
-            <div class="center-align" style="margin-top: 30px;">
-                <button type="submit" class="btn blue darken-2 waves-effect waves-light" style="width: 100%;">
-                    LOGIN
+            <p id="errorMsg" class="red-text center-align" style="display: none; font-weight:600;">Invalid credentials</p>
+            <div class="center-align" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-login waves-effect waves-light" style="width: 100%;">
+                    SECURE LOGIN
                 </button>
             </div>
         </form>
