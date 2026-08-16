@@ -266,6 +266,27 @@ document.addEventListener('DOMContentLoaded', function() {
         storageBucket: "helmet-ee4de.firebasestorage.app"
     };
 
+    let firebaseWorkers = {};
+
+    function updateUIFromFirebase() {
+        Object.keys(firebaseWorkers).forEach(key => {
+            const worker = { id: key, ...firebaseWorkers[key] };
+            if (!worker.name || worker.name.startsWith("Worker WRK")) {
+                worker.name = "Alex Johnson";
+            }
+            
+            if (worker.timestamp) {
+                worker.secondsSinceUpdate = (Date.now() - worker.timestamp) / 1000;
+                if (worker.secondsSinceUpdate > 10) worker.status = "offline";
+            }
+            
+            updateCardDOM(worker);
+            if (worker.lat && worker.lng) {
+                updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
+            }
+        });
+    }
+
     if (typeof firebase !== 'undefined') {
         try {
             firebase.initializeApp(firebaseConfig);
@@ -273,24 +294,13 @@ document.addEventListener('DOMContentLoaded', function() {
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
-                    Object.keys(val).forEach(key => {
-                        const worker = { id: key, ...val[key] };
-                        if (!worker.name || worker.name.startsWith("Worker WRK")) {
-                            worker.name = "Alex Johnson";
-                        }
-                        
-                        if (worker.timestamp) {
-                            worker.secondsSinceUpdate = (Date.now() - worker.timestamp) / 1000;
-                            if (worker.secondsSinceUpdate > 10) worker.status = "offline";
-                        }
-                        
-                        updateCardDOM(worker);
-                        if (worker.lat && worker.lng) {
-                            updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
-                        }
-                    });
+                    firebaseWorkers = val;
+                    updateUIFromFirebase();
                 }
             });
+            
+            // Local ticker to detect offline status even when Firebase doesn't trigger
+            setInterval(updateUIFromFirebase, 1000);
         } catch (e) { console.error("Firebase web init error:", e); }
     }
 });
