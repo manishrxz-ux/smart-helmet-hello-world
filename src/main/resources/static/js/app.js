@@ -290,6 +290,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (!worker.name || worker.name.startsWith("Worker WRK")) {
                             worker.name = "Alex Johnson";
                         }
+                        
+                        if (worker.timestamp) {
+                            worker.secondsSinceUpdate = (Date.now() - worker.timestamp) / 1000;
+                            if (worker.secondsSinceUpdate > 10) worker.status = "offline";
+                        }
+                        
                         updateCardDOM(worker);
                         if (worker.lat && worker.lng) {
                             updateMapMarker(worker.id, worker.name || worker.id, worker.lat, worker.lng, worker.status || 'green');
