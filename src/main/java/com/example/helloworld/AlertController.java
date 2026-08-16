@@ -19,4 +19,10 @@ public class AlertController {
         // Return latest 500 alerts that are red or yellow
         return sensorDataRepository.findTop500ByStatusInOrderByTimestampDesc(Arrays.asList("red", "yellow"));
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping
+    public org.springframework.http.ResponseEntity<?> clearAllAlerts() {
+        sensorDataRepository.deleteAll();
+        return org.springframework.http.ResponseEntity.ok("{\"success\":true}");
+    }
 }
